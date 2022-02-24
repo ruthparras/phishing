@@ -1,7 +1,7 @@
 ---
 title: "Web Page Phishing Detection using ML"
 author: "Ruth Parras"
-date: "10/25/2021"
+date: "02/23/2022"
 output: 
   pdf_document:
     number_sections: true
@@ -29,7 +29,7 @@ load("rdas/y_train.rda")
 
 ## Objective 
 
-Phishing is a fraudulent activity where a cyber criminal sends communications (often email) pretending to be from a legitimate company to lure a victim into providing personal information on a fraudulent web page. 
+Phishing is a fraudulent activity where a cyber criminal sends communications (often email) pretending to be from a legitimate company, to lure a victim into providing personal information on a fraudulent web page. 
 
 The goal of this project is to train several widely used algorithms to predict whether a web page is legitimate or fraudulent, based on different characteristics of the page such as the syntax of its web address (URL), content, and information returned by external services
 
@@ -56,7 +56,7 @@ Following is an outline of the key steps performed in this project:
 
 - Next we use visualization and clustering techniques to explore opportunities to further decrease the large number of predictors in the dataset.
 
-- We use Principal Component Analysis (PCA) to further reduce dimensions. This makes it easier to visualize relationships in the data, and will improve the performance of the ML algorithms we are building.
+- We use Principal Component Analysis (PCA) to reduce dimensions. This makes it easier to visualize relationships in the data, and will improve the performance of the ML algorithms we are building.
 
 - After applying the PCA transformation, we train some of the most common caret models (Naive Bayes, LDA, QDA, kNN and Random Forest) using 80% of the observations. The remainder 20% is used to evaluate the algorithm.
 
@@ -96,6 +96,9 @@ knitr::include_graphics("figures/sds.png")
 knitr::include_graphics("figures/sds_zoom.png")
 
 ```
+ \newline
+
+ \linebreak
 
 After removing 35 features with low predictive power (variability) as proposed by the **nearZeroVar** function, the number of predictors goes down to  `r dim(phish)[2]-1` 
 
@@ -154,6 +157,8 @@ y_train <- phish_y[-test_index]
 ```
 \normalsize
 
+ \linebreak
+
 ## Data Exploration and Visualization
 
 Rather than using the full *phish* dataset, we explore the data in the *train_set* alone, to make sure that "unknown" information from the *test_set* is not "leaked" and used during the prediction. The first few rows and columns of the scaled *train_set* look like this :
@@ -172,7 +177,7 @@ knitr::kable(train_set[1:5,1:5])
 ### Visualizing feature relationships
 
 Visualizing the relationships among 52 features is a vast task. Instead, we use a heatmap to find groups of features that are in closer proximity, hence, creating an opportunity for dimension reduction. 
- \newline
+
 
 \small
 ```{r heatmap_code, fig.align='center', out.width="75%", echo=TRUE, eval=TRUE}
@@ -219,6 +224,7 @@ summary(prcomp(x_train, rank.=10))  # display the first 10 (out of 52)
 \normalsize
 
 The first two principal components explain 21% of the variance. To decide how many components we need, we plot the proportion of variance and its cumulative sum, with variance defined as `(pca$sdev^2)/sum(pca$sdev^2)`:
+ \newline
 
 ```{r pc_variance, echo=FALSE,,out.width="45%"}
 
@@ -233,15 +239,15 @@ The first plot shows that the first components explain significantly more varian
 
 ### Data Visualization using PCA
 
-Dimension reduction makes data easier to visualize. Let's do a boxplot of the first 5 principal components grouped by page status.
+Dimension reduction makes data easier to visualize. Let's do a boxplot of the first 5 principal components grouped by status.
 
-```{r boxplot_pcs, echo=FALSE, fig.align='center', out.width="65%"}
+```{r boxplot_pcs, echo=FALSE, fig.align='center', out.width="60%"}
 
 knitr::include_graphics("figures/boxplot_PC1_PC5.png")
 ```
 
-The first PC is significantly different by page status as demonstrated by the little overlap in the interquartile ranges (IQRs). The overlap progressively increases as we move from from PC2 to PC5. This means that PC1 has the most predictive power. However, PC1 only explains 13% of the variance in the dataset, so we need to consider more components to account for more variance and make more accurate predictions.
-
+PC1 and PC4 are significantly different by page status as demonstrated by the little overlap in the interquartile ranges (IQRs). This means that they have the most predictive power. However, PC1 only explains 13% of the variance in the data, while PC4 0.6%, so we need to consider more components to account for more variance and make better predictions.
+ \newline
 
 Let's plot the relationship among the first 8 components.
  \newline
@@ -260,7 +266,7 @@ knitr::include_graphics("figures/PC7_PC8.png")
  \newline
 
 The plot between PC1 and PC2 shows a clear separation between web pages: phishing sites tend to have larger values of PC1. We are also able to separate each class in the plot between PC3 and PC4. However, as we move from PC5 to PC8, it becomes increasingly difficult to separate sites
-
+ \newline
 
 ## Insights
 
@@ -268,8 +274,9 @@ The biggest challenge in this project is the large number of predictors (87) inc
 
 Using a heatmap and a dendrogram to visualize the distance among features, we observe that there is overlap among them, which creates an opportunity for decreasing the number of predictors even further.  
 
-**Principal Component Analysis** (PCA) proves very effective in reducing dimensions from `r dim(x_train)[2]` to 20, while still being able to explain 76% of the variance in the data, and therefore make accurate predictions.
+**Principal Component Analysis** (PCA) proves very effective in reducing dimensions from `r dim(x_train)[2]` to 20, while still being able to explain 76% of the variance in the data, and therefore make good predictions.
 
+ \newline
 
 # Modeling Approach
 
@@ -285,6 +292,8 @@ x_test_pca<- x_test_pca[ ,1:dim]  # reduce dimensions of testing set to 20
 
 ```
 \normalsize
+
+
 
 ## Naive Bayes, LDA, QDA, kNN, Random Forest
 Next we train 5 of the most common caret models using default parameters. We apply each fitted model to the test set to make predictions and compare them with known outcomes to evaluate performance. 
@@ -310,13 +319,15 @@ results <- sapply(c(1:5), function (col) {  # compare the predictions with known
 ```
 \normalsize
 
+ \newpage
 
 ## Tuning kNN
 To further improve performance, we tune the hyper-parameters of the best performing models above: kNN and Random Forest. For kNN, we use 10-fold cross-validation to find that the value of k-neighbors that maximizes accuracy is 3.
 
+
 \small
 ```{r train_knn, echo=TRUE, eval=FALSE}
-k<- seq(1, 19, 1) # use values of k between 1 and 19.
+k<- seq(1, 19, 1) 
 control<- trainControl(method = "cv", number = 10, p = .9) # 10 fold cross-validation
 
 set.seed(123, sample.kind = "Rounding") # if using R 3.6 or later
@@ -330,7 +341,7 @@ k_opt <- train_knn$bestTune$k # value of k that maximizes accuracy
 fit_knn <- knn3 (x_train_pca, y_train, k= k_opt)
 y_hat_knn <- predict (fit_knn, x_test_pca, type="class") 
 cm<- confusionMatrix(y_hat_knn, y_test)
-cm$overall["Accuracy"]
+
 ```
 \normalsize
 
@@ -341,17 +352,18 @@ Similarly, we train random forest using 5-fold cross validation. Once we have de
 ```{r train_rf, echo=TRUE, eval=FALSE}
 control<- trainControl(method = "cv", number = 5) # use 5-fold cross validation
 
+# tune for mtry between 1 and 19 (dim - 1)
 set.seed(123, sample.kind = "Rounding")    # if using R 3.6 or later
 train_rf<- train (x_train_pca, y_train, method = "rf", 
                   tuneGrid = data.frame (mtry = seq(1, 10, 1)), 
                   trControl=control ) 
 
-# Find the node size that maximizes accuracy, with tuned mtry value
-nodesize <- seq(1, 10, 1)
+# Find the node size that maximizes accuracy for the best mtry 
+nodesize <- seq(1, 10, 1)  # default for class is 1
 acc <- sapply(nodesize, function(ns){
   set.seed(123, sample.kind = "Rounding")    # if using R 3.6 or later
   train(x_train_pca, y_train,  method = "rf",  
-        tuneGrid = data.frame(mtry = train_rf$bestTune$mtry), # tuned mtry value
+        tuneGrid = data.frame(mtry = train_rf$bestTune$mtry), # best mtry value
         nodesize = ns)$results$Accuracy })
 
 ns <- nodesize[which.max(acc)]  # nodesize that maximizes accuracy
@@ -362,13 +374,13 @@ fit_rf <- randomForest(x_train_pca, y_train, mtry= train_rf$bestTune$mtry,
 y_hat_rf <- predict (fit_rf, x_test_pca)
 
 cm<- confusionMatrix(y_hat_rf, y_test)
-cm$overall["Accuracy"]
 
 ```
 \normalsize
 
+ \newpage 
+
 Here are the plots for the tuning of mtry and nodesize. The value that maximizes accuracy for both is 2
- \newline
 
 ```{r rf_plots, echo=FALSE, out.width="50%"}
 
@@ -376,6 +388,7 @@ knitr::include_graphics("figures/mtry_plot.png")
 knitr::include_graphics("figures/nodesize_plot.png")
 ```
  \newline
+
 
 ## Ensemble majority prediction
 Finally, we combine the predictions from the 3 best performing algorithms (LDA, kNN, and random forest) to  generate a majority prediction of the web page type. 
@@ -391,12 +404,9 @@ ensemble <- cbind (lda = factor(predictions[,2]) =="phishing",
 y_hat_ensemble <- ifelse(rowMeans(ensemble) >  0.5, "phishing", "legitimate")
 
 cm<-confusionMatrix(factor(y_hat_ensemble), y_test)
-cm$overall["Accuracy"]   
 
 ```
 \normalsize
- \newline
- 
 
 # Results
 
@@ -411,7 +421,7 @@ knitr::kable(results_final)
 \normalsize
 
 
-Since our dataset is balanced and shows high detection rates across all models for both, true positives (sensitivity) and true negatives (specificity), we focus on accuracy to compare results.
+Since our dataset is balanced and shows high detection rates across all models for true positives (sensitivity) and true negatives (specificity), we focus on accuracy to compare results.
 
 
 The best performing model is Random Forest with an accuracy of 95.3% after tuning for mtry and nodesize, outperforming kNN (94.7% accuracy after optimizing for k-neighbors).
@@ -419,8 +429,9 @@ The best performing model is Random Forest with an accuracy of 95.3% after tunin
 
 Interestingly, LDA produced much better accuracy (93.3%) over QDA (85.9%), even though it's a linear approximation and a much less flexible classifier. Several articles (see references) indicate that "LDA tends to perform better than QDA if there are relatively few training observations, and so reducing variance is crucial. In contrast, QDA is recommended if the training set is very large, so that the variance of the classifier is not a major concern".
 
+Another reason not to choose QDA over other models, is that it shows the worse ability to predict that a site is a scam (low specificity), which can be very costly. 
 
-Finally, we combined the predictions from the three best performing algorithms (LDA, kNN, and Random Forest) to generate a majority prediction of the web page type.  This ensemble outperformed all individual models reaching an accuracy of 95.7%.
+Finally, we combined the results from the three best performing algorithms (LDA, kNN, and Random Forest) to generate a majority prediction of the web page type.  This ensemble outperformed all individual models reaching an accuracy of 95.7%.
 
 
 # Conclusion
@@ -429,19 +440,19 @@ Finally, we combined the predictions from the three best performing algorithms (
 
 The goal of this project is to train several widely used algorithms to predict whether a web page is legitimate or fraudulent. Faced with the challenge of relatively high dimensional data (87 predictors), we explored opportunities to decrease the number of dimensions. 
 
-First, we removed 35 features that don't vary much from observation to observation (near-zero variability), and therefore have little predictive power. 
+First, we removed 35 features that don't vary much (near-zero variability), and therefore have little predictive power. 
 
 Next, we used visualization and clustering to find groups of features in closer proximity creating an opportunity to further cut down dimensions by eliminating overlap (redundancy). 
 
-This was achieved using  **Principal Component Analysis** (PCA), which helped reduce the number of dimensions from 52 to 20 principal components, and still explain 76% of the variance in the data.
+This was achieved using  **Principal Component Analysis** (PCA), which helped reduce the number of dimensions from 52 to 20, and still explain 76% of the variance in the data.
 
-Leveraging this insight, we trained the most common caret models (Naive Bayes, LDA, QDA, kNN and Random Forest) on a PCA-transformed train set with only 20 dimensions. 
+Using the PCA-transformed train set with only 20 dimensions (PC1 to PC20), we trained the most common caret models (Naive Bayes, LDA, QDA, kNN and Random Forest).
 
 After applying the same PCA transformation to the test set, we made predictions using each fitted model, and evaluated their performance.
 
-Finally, we further improved results by tuning hyper-parameters, and by combining the three best performing algorithms (LDA, kNN and Random Forest) into an ensemble that generated a majority prediction of the web page type
+Finally, we further improved results by tuning hyper-parameters, and by combining the three best performing algorithms (LDA, kNN and Random Forest) into an ensemble that generated a majority prediction of the web page type.
 
-**Altogether we were able to achieve an accuracy of 95.7% using only 20 dimensions explaining 76% of the variability of the data**, out of a total of 52 principal components, and 87 features in the original dataset. 
+**Altogether we were able to achieve an accuracy of 95.7%, using only 20 dimensions explaining 76% of the variability of the data**, out of a total of 52 principal components, and 87 features in the original dataset. 
 
 
 ## Future Work
@@ -450,11 +461,11 @@ More time needs to be spent cleaning the data to reduce the large number of outl
 
 Faced with the curse of dimensionality, we used *PCA analysis* to reduce dimensions. A big disadvantage of this method is that  *principal components* are combinations of the original features; therefore, not as easy to interpret. For example, we can not simply tell which features contributed the most to the analysis.  
 
-To solve for this, we could explore fitting a random forest for all 52 predictors and use *varImp* to determine the importance of each feature.  Alternatively, we  could use recursive feature selection *rfe* to identify the best predictors and their performance (see references).  
+To solve for this, we could explore fitting random forest for all 52 predictors and use *varImp* to determine the importance of each feature.  Alternatively, we  could use recursive feature selection *rfe* to identify the best predictors and their performance (see references).  
 
-The key to machine learning is hyper-parameter tuning. Searching for hyper-parameters to obtain the best fit can be tedious, so for this project we just focused on a few.  It would be interesting to explore *grid search* or *random search* algorithms to handle more hyper-parameters in a more efficient way (see references)
+The key to machine learning is hyper-parameter tuning. Searching for hyper-parameters to obtain the best fit can be tedious, so for this project we just focused on a few.  It would be interesting to explore *grid or random search* algorithms to handle more hyper-parameters, in a more efficient way (see references).
 
-Finally, there are opportunities to improve results by training additional models in the caret package, in particular different implementations of random forest, such as Rborist or cforest, or other algorithms that adapt well to high dimensions and overcome the curse of dimensionality
+Finally, there are opportunities to improve results by training additional models in the caret package. In particular, different implementations of random forest, such as Rborist or cforest, or other algorithms that adapt well to high dimensions and overcome the curse of dimensionality
 
 
 
@@ -463,7 +474,6 @@ Finally, there are opportunities to improve results by training additional model
 - Web Page Phishing Detection dataset, https://www.kaggle.com/shashwatwork/web-page-phishing-detection-dataset
 - edx course reference book: https://rafalab.github.io/dsbook/
 - what is phishing, https://www.phishing.org/what-is-phishing
-- normalizing data in r, https://www.statology.org/how-to-normalize-data-in-r/
 - caret packages, https://topepo.github.io/caret/available-models.html
 - kNN, QDA, LDA, https://people.math.umass.edu/~anna/stat697F/Chapter4_2.pdf
 - hyperparameter optimization, https://en.wikipedia.org/wiki/Hyperparameter_optimization

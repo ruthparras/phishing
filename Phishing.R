@@ -240,11 +240,11 @@ boxplot_PC1_PC5 <- data.frame(status = y_train, pca$x[,1:5]) %>%
   theme(legend.position="top") +
   scale_fill_manual(breaks = c("legitimate", "phishing"), 
                     values=c("lightgreen", "lightcoral")) + # change color of legend
-  ggtitle("Boxplot of first 5 PCs grouped by page status") + 
-  theme(plot.title =element_text(size=40, face ="bold" ), #change font size of all text
-        axis.text=element_text(size=30), #change font size of axis text
+  ggtitle("Boxplot of first 5 PCs grouped by status") + 
+  theme(plot.title =element_text(size=24, face ="bold" ), #change font size of all text
+        axis.text=element_text(size=18), #change font size of axis text
         axis.title=element_blank(), # change font size of axis titles
-        legend.text=element_text(size=30, face="bold"),  #change font size of legend
+        legend.text=element_text(size=20),  #change font size of legend
         legend.title= element_blank()) # remove legend title
 
 boxplot_PC1_PC5
@@ -265,10 +265,10 @@ PC1_PC2<- data.frame(pca$x[,1:2], status= y_train) %>%
   scale_fill_manual(breaks = c("legitimate", "phishing"), 
                     values=c("lightgreen", "lightcoral")) + # change color of legend
   ggtitle("PC1 and PC2") + 
-  theme(plot.title =element_text(size=40, face ="bold" ), #change font size of all text
-        axis.text=element_text(size=30), #change font size of axis text
-        axis.title=element_text(size=30), # change font size of axis titles
-        legend.text=element_text(size=30, face="bold"), #change font size of legend
+  theme(plot.title =element_text(size=26, face ="bold" ), #change font size of all text
+        axis.text=element_text(size=18), #change font size of axis text
+        axis.title=element_text(size=20), # change font size of axis titles
+        legend.text=element_text(size=20), #change font size of legend
         legend.title= element_blank()) # remove legend title
 
 PC3_PC4<- data.frame(pca$x[,3:4], status= y_train) %>%
@@ -279,10 +279,10 @@ PC3_PC4<- data.frame(pca$x[,3:4], status= y_train) %>%
   scale_fill_manual(breaks = c("legitimate", "phishing"), 
                     values=c("lightgreen", "lightcoral")) + # change color of legend
   ggtitle("PC3 and PC4") + 
-  theme(plot.title =element_text(size=40, face ="bold" ), #change font size of all text
-        axis.text=element_text(size=30), #change font size of axis text
-        axis.title=element_text(size=30), # change font size of axis titles
-        legend.text=element_text(size=30, face="bold"),  #change font size of legend
+  theme(plot.title =element_text(size=26, face ="bold" ), #change font size of all text
+        axis.text=element_text(size=18), #change font size of axis text
+        axis.title=element_text(size=20), # change font size of axis titles
+        legend.text=element_text(size=20),  #change font size of legend
         legend.title= element_blank()) # remove legend title
 
 PC5_PC6<- data.frame(pca$x[,5:6], status= y_train) %>%
@@ -293,10 +293,10 @@ PC5_PC6<- data.frame(pca$x[,5:6], status= y_train) %>%
   scale_fill_manual(breaks = c("legitimate", "phishing"), 
                     values=c("lightgreen", "lightcoral")) + # change color of legend
   ggtitle("PC5 and PC6") + 
-  theme(plot.title =element_text(size=40, face ="bold" ), #change font size of all text
-        axis.text=element_text(size=30), #change font size of axis text
-        axis.title=element_text(size=30), # change font size of axis titles
-        legend.text=element_text(size=30, face="bold"),  #change font size of legend
+  theme(plot.title =element_text(size=26, face ="bold" ), #change font size of all text
+        axis.text=element_text(size=18), #change font size of axis text
+        axis.title=element_text(size=20), # change font size of axis titles
+        legend.text=element_text(size=20),  #change font size of legend
         legend.title= element_blank()) # remove legend title
 
 PC7_PC8<- data.frame(pca$x[,7:8], status= y_train) %>%
@@ -308,10 +308,10 @@ PC7_PC8<- data.frame(pca$x[,7:8], status= y_train) %>%
   scale_fill_manual(breaks = c("legitimate", "phishing"), 
                     values=c("lightgreen", "lightcoral")) + # change color of legend
   ggtitle("PC7 and PC8") + 
-  theme(plot.title =element_text(size=40, face ="bold" ), #change font size of all text
-        axis.text=element_text(size=30), #change font size of axis text
-        axis.title=element_text(size=30), # change font size of axis titles
-        legend.text=element_text(size=30, face="bold"),  #change font size of legend
+  theme(plot.title =element_text(size=26, face ="bold" ), #change font size of all text
+        axis.text=element_text(size=18), #change font size of axis text
+        axis.title=element_text(size=20), # change font size of axis titles
+        legend.text=element_text(size=20),  #change font size of legend
         legend.title= element_blank()) # remove legend title
 
 PC1_PC2
@@ -420,10 +420,10 @@ train_rf<- train (x_train_pca, y_train, method = "rf",
                   trControl=control ) 
 
 mtry_plot<- ggplot( train_rf, highlight= TRUE) +  # highlight mtry value with highest accuracy
-  geom_point(size=10) +
+  geom_point(size=6) +
   xlab("Randomly Selected Predictors (mtry)") + 
-  theme( axis.text=element_text(size=30), #change font size of axis text
-         axis.title=element_text(size=40)) # change font size of axis titles
+  theme( axis.text=element_text(size=18), #change font size of axis text
+         axis.title=element_text(size=26)) # change font size of axis titles
 mtry_plot
 
 ggsave("figures/mtry_plot.png", mtry_plot, dpi=300)  # save for load into markdown
@@ -440,10 +440,10 @@ acc <- sapply(nodesize, function(ns){
 })
 
 nodesize_plot <- ggplot (data.frame(acc, nodesize), aes(nodesize, acc)) + # plot nodesize accuracy
-  geom_point(size=10) +
-  xlab("nodesize") + ylab("accuracy") + 
-  theme( axis.text=element_text(size=30), #change font size of axis text
-         axis.title=element_text(size=40)) # change font size of axis titles
+  geom_point(size=6) +
+  xlab("Nodesize") + ylab("Accuracy") + 
+  theme( axis.text=element_text(size=18), #change font size of axis text
+         axis.title=element_text(size=26)) # change font size of axis titles
 nodesize_plot
 
 ggsave("figures/nodesize_plot.png", nodesize_plot, dpi=300)
@@ -466,7 +466,6 @@ results2 <- c("tuned rf",
 results<- cbind (results, results2)
 
 imp<- varImp(train_rf) # calculate importance of each PC component for determining the web page type
-imp 
 
 
 #    ENSEMBLE  - Majority prediction
